@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "httpx_pkcs12"
-version = "1.0.0"
+version = "1.0.1"
 description = "Addon which activates PKCS12 certificates usage with HTTPX client."
 authors = ["Shagit Ziganshin <theLastOfCats@pm.me>"]
 license = "MIT"
+readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 cryptography = "^3.4.7"
 
 [build-system]
