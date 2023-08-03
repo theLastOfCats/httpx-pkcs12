@@ -1,26 +1,28 @@
-# This workflow will upload a Python Package using Twine when a release is created
-# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Upload Python Package
+name: Deploy to PyPI
 
 on:
   release:
-    types: [published]
+    types: [created]
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
-
+    env:
+      POETRY_VIRTUALENVS_CREATE: "false"
     steps:
-    - uses: actions/checkout@v2
-    - name: Publish python poetry package
-      uses: JRubics/poetry-publish@v1.7
-      with:
-        pypi_token: ${{ secrets.PYPI_API_TOKEN }}
-        python_version: '3.9.5'
+      - uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: |
+          pipx install poetry
+          pipx inject poetry poetry-bumpversion
+
+      - name: Build
+        run: |
+          poetry version ${{ github.ref_name }}
+          poetry build
+
+      - name: Publish
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+          poetry publish
