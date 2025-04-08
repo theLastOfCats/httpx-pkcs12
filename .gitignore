@@ -1,3 +1,16 @@
 .vscode
 .idea
 dist
+.venv
+__pycache__
+.pytest_cache
+.ruff_cache
+*.egg-info
+*.egg
+*.pdb
+*.log
+*.coverage
+*.cover
+*.hypothesis
+coverage*
+htmlcov
