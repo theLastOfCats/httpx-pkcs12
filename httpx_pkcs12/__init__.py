@@ -21,7 +21,7 @@ from cryptography.hazmat.primitives.serialization.pkcs12 import (
     load_key_and_certificates,
 )
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 
 
 class CertificateError(Exception):
