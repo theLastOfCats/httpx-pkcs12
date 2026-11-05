@@ -1,0 +1,40 @@
+name: Dependabot auto-merge
+
+on:
+  workflow_run:
+    workflows: [Test, Lint]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependabot-merge-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      startsWith(github.event.workflow_run.head_branch, 'dependabot/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # workflow_run checks out the trusted default branch, never PR code/artifacts.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          python-version: "3.14"
+      - name: Install locked dependencies from the default branch
+        run: uv sync --frozen --extra dev
+      - name: Merge an eligible exact head after all required checks pass
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: uv run python .github/scripts/dependabot_automerge.py
