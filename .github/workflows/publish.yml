@@ -20,7 +20,6 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
-      actions: write
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
@@ -28,29 +27,6 @@ jobs:
       - name: Maintain release PR or create release
         id: release
         uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5
-      - name: Start CI for token-created release PRs
-        if: steps.release.outputs.prs != ''
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        env:
-          RELEASE_PRS: ${{ steps.release.outputs.prs }}
-        with:
-          script: |
-            const {owner, repo} = context.repo;
-            for (const {number} of JSON.parse(process.env.RELEASE_PRS)) {
-              const {data: pr} = await github.rest.pulls.get({
-                owner, repo, pull_number: number,
-              });
-              if (pr.state !== 'open' || pr.base.ref !== 'main' ||
-                  pr.head.repo?.full_name !== `${owner}/${repo}` ||
-                  !pr.head.ref.startsWith('release-please--branches--')) {
-                throw new Error(`Unexpected release PR #${number}`);
-              }
-              for (const workflow_id of ['test.yml', 'lint.yml']) {
-                await github.rest.actions.createWorkflowDispatch({
-                  owner, repo, workflow_id, ref: pr.head.ref,
-                });
-              }
-            }
 
   build:
     needs: release
