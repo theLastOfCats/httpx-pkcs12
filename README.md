@@ -14,6 +14,9 @@ Enhanced PKCS12 (PFX/P12) certificate support for the HTTPX Python client. This 
 
 ## Installation
 
+Requires **Python 3.13 or newer**. CI tests Python 3.13, 3.14, and 3.15;
+local development uses Python 3.14.
+
 ```bash
 pip install httpx-pkcs12
 ```
@@ -113,6 +116,35 @@ The package raises the following exceptions:
 - `CertificateError`: For certificate validation issues
 - `ValueError`: For invalid input data
 - `IOError`: For file operation failures
+
+## Development and Releases
+
+```bash
+uv sync --frozen --extra dev
+uv run pytest
+uv run ruff check
+uv run mypy httpx_pkcs12
+uv build
+```
+
+Use Conventional Commits: `fix:` releases a patch, `feat:` a minor, and
+`feat!:` or a `BREAKING CHANGE:` footer a major version. Routine development-tool
+and GitHub Actions updates use `chore(deps):` and do not cause releases.
+
+Release Please maintains a release PR with `CHANGELOG.md`, the version in
+`httpx_pkcs12/__init__.py`, and `.release-please-manifest.json`. Approve its
+workflow runs if GitHub requests approval, wait for required CI, then manually
+merge the release PR. The same `publish.yml` run creates the tag, builds that
+exact tag, publishes through PyPI trusted publishing, and attaches signed
+distributions to the GitHub release. If publishing fails after tag creation,
+rerun the failed jobs in that run; pushing another commit is not a retry.
+
+Dependabot groups routine patch/minor updates monthly. Development dependencies
+and GitHub Actions may merge automatically only after all required CI passes.
+Runtime dependencies (including transitive lock changes), major updates, and
+unrecognized metadata require manual handling. The privileged merge workflow
+uses only default-branch code, verifies the bot's signed commit, and merges
+the exact checked head without leaving a pending auto-merge request.
 
 ## License
 
