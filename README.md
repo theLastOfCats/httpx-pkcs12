@@ -132,8 +132,9 @@ Use Conventional Commits: `fix:` releases a patch, `feat:` a minor, and
 and GitHub Actions updates use `chore(deps):` and do not cause releases.
 
 Release Please maintains a release PR with `CHANGELOG.md`, the version in
-`httpx_pkcs12/__init__.py`, and `.release-please-manifest.json`. The release
-workflow explicitly dispatches Test and Lint for bot-created release PRs.
+`httpx_pkcs12/__init__.py`, and `.release-please-manifest.json`. GitHub requires
+approval before running CI on PRs created with `GITHUB_TOKEN`: use **Approve
+workflows to run** on the PR (or `gh api repos/OWNER/REPO/actions/runs/RUN_ID/approve --method POST`).
 Wait for required CI, then manually merge the release PR. The same
 `publish.yml` run creates the tag, builds that
 exact tag, publishes through PyPI trusted publishing, and attaches signed
